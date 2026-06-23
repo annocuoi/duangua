@@ -19,7 +19,7 @@ def load_img(file):
     return data
 
 
-horse_img = load_img("ngua.png")
+horse_img = load_img("ngua_tu_video.gif")
 
 
 # ======= CSS =======
@@ -97,7 +97,7 @@ def ve_duong():
         <div class="horse"
         style="left:{x}%">
 
-        <img src="data:image/png;base64,{horse_img}"
+        data:image/gif;base64,{horse_img}"
         width="120">
 
         </div>
