@@ -26,8 +26,6 @@ if st.button("Bắt đầu trận đấu!"):
     
     arena_placeholder = st.empty()
     start_time = time.time()
-    
-    # Trạng thái ban đầu: chưa đánh
     is_fighting = False
     
     while time.time() - start_time < 60:
@@ -35,20 +33,18 @@ if st.button("Bắt đầu trận đấu!"):
         dy = c2['y'] - c1['y']
         dist = math.sqrt(dx**2 + dy**2)
         
-        # LOGIC MỚI: Tiến lại gần từ từ trước khi đánh
+        # Tốc độ thăm dò chỉ còn 1.5 cực chậm
         if dist > 80 and not is_fighting:
-            # Giai đoạn thăm dò: tốc độ chậm (3px)
-            speed = 3
+            speed = 1.5
         else:
-            # Giai đoạn chiến đấu: đã áp sát, tăng tốc (25px)
             is_fighting = True
             speed = 25 if dist > 60 else 5
         
         # Di chuyển
-        c1['x'] += (dx/dist) * speed * c1['bias'] + random.randint(-10, 10)
-        c1['y'] += (dy/dist) * speed * c1['bias'] + random.randint(-10, 10)
-        c2['x'] -= (dx/dist) * speed * c2['bias'] + random.randint(-10, 10)
-        c2['y'] -= (dy/dist) * speed * c2['bias'] + random.randint(-10, 10)
+        c1['x'] += (dx/dist) * speed * c1['bias'] + random.randint(-5, 5)
+        c1['y'] += (dy/dist) * speed * c1['bias'] + random.randint(-5, 5)
+        c2['x'] -= (dx/dist) * speed * c2['bias'] + random.randint(-15, 15)
+        c2['y'] -= (dy/dist) * speed * c2['bias'] + random.randint(-15, 15)
         
         # Ép trong sân
         for c in [c1, c2]:
