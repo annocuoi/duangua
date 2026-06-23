@@ -69,6 +69,20 @@ st.markdown(
 .horse{
     position:absolute;
     top:10px;
+    animation: moveHorse 8s linear forwards;
+}
+
+
+@keyframes moveHorse {
+
+    from{
+        left:0%;
+    }
+
+    to{
+        left:85%;
+    }
+
 }
 
 
