@@ -2,6 +2,7 @@ import streamlit as st
 import random
 import time
 import base64
+import streamlit.components.v1 as components
 
 
 # =========================
@@ -86,63 +87,82 @@ if "vitri" not in st.session_state:
         0,0,0,0,0
     ]
 
-
-khung = st.empty()
-
-
-
 # =========================
 # VẼ ĐƯỜNG ĐUA
 # =========================
 
 def ve_game():
 
-    html = ""
+    html = """
+    <style>
+
+    .duongdua{
+        width:100%;
+        height:100px;
+        border-bottom:2px dashed gray;
+        position:relative;
+    }
+
+    .start{
+        position:absolute;
+        left:0;
+        top:35px;
+        color:green;
+        font-weight:bold;
+    }
+
+    .finish{
+        position:absolute;
+        right:20px;
+        top:35px;
+        color:red;
+        font-weight:bold;
+    }
+
+    .horse{
+        position:absolute;
+        top:10px;
+    }
+
+    </style>
+    """
+
 
     for i in range(5):
 
         html += f"""
 
-<div class="duongdua">
+        <div class="duongdua">
+
+            <div class="start">
+            Xuất phát
+            </div>
 
 
-    <div class="start">
-        Xuất phát
-    </div>
+            <div class="horse"
+            style="left:{st.session_state.vitri[i]}%">
+
+                <img
+                src="data:image/gif;base64,{ngua}"
+                width="130">
+
+            </div>
 
 
-    <div class="horse"
-    style="left:{st.session_state.vitri[i]}%">
+            <div class="finish">
+            Đích 🏆
+            </div>
 
 
-        <img 
-        src="data:image/gif;base64,{ngua}"
-        width="130">
+        </div>
+
+        """
 
 
-    </div>
-
-
-    <div class="finish">
-        Đích 🏆
-    </div>
-
-
-</div>
-
-
-"""
-
-    khung.markdown(
+    components.html(
         html,
-        unsafe_allow_html=True
+        height=600
     )
-
-
-
-ve_game()
-
-
 
 # =========================
 # NÚT CHẠY
