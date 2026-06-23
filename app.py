@@ -6,18 +6,33 @@ import math
 st.set_page_config(page_title="Đấu Trường Đá Gà", layout="centered")
 st.title("🐔 Đấu Trường Đá Gà Máu Lửa")
 
+# CSS: Tăng kích thước vạch trắng và thêm đổ bóng cho nổi bật
 st.markdown("""
     <style>
     .arena { width: 400px; height: 400px; border: 10px solid #5d4037;
              border-radius: 50%; background-color: #f1f8e9;
              position: relative; margin: 0 auto; overflow: hidden; }
-    .line { position: absolute; width: 40px; height: 5px; background: white; }
+    .line { position: absolute; width: 60px; height: 10px; background: white; 
+            box-shadow: 0 0 5px rgba(0,0,0,0.5); border-radius: 2px; }
     .chicken { width: 30px; height: 30px; border-radius: 50%;
                position: absolute; transition: all 0.05s linear; }
     </style>
 """, unsafe_allow_html=True)
 
-if st.button("Bắt đầu trận đấu!"):
+# Khởi tạo trạng thái game
+if 'running' not in st.session_state:
+    st.session_state.running = False
+
+def start_game():
+    st.session_state.running = True
+
+# Nút bấm sẽ bị ẩn hoặc vô hiệu hóa khi running = True
+if not st.session_state.running:
+    st.button("Bắt đầu trận đấu!", on_click=start_game)
+else:
+    st.button("Đang trong trận đấu...", disabled=True)
+
+if st.session_state.running:
     rand = random.random()
     result = "Hòa" if rand < 0.10 else ("Đỏ Thắng" if rand < 0.55 else "Xanh Thắng")
         
@@ -33,20 +48,17 @@ if st.button("Bắt đầu trận đấu!"):
         dy = c2['y'] - c1['y']
         dist = math.sqrt(dx**2 + dy**2)
         
-        # Tốc độ thăm dò chỉ còn 1.5 cực chậm
         if dist > 80 and not is_fighting:
             speed = 1.5
         else:
             is_fighting = True
             speed = 25 if dist > 60 else 5
         
-        # Di chuyển
         c1['x'] += (dx/dist) * speed * c1['bias'] + random.randint(-5, 5)
         c1['y'] += (dy/dist) * speed * c1['bias'] + random.randint(-5, 5)
         c2['x'] -= (dx/dist) * speed * c2['bias'] + random.randint(-15, 15)
         c2['y'] -= (dy/dist) * speed * c2['bias'] + random.randint(-15, 15)
         
-        # Ép trong sân
         for c in [c1, c2]:
             d_center = math.sqrt((c['x']-200)**2 + (c['y']-200)**2)
             if d_center > 170:
@@ -56,8 +68,8 @@ if st.button("Bắt đầu trận đấu!"):
         
         html = f'''
         <div class="arena">
-            <div class="line" style="left:180px; top:80px;"></div>
-            <div class="line" style="left:180px; top:320px;"></div>
+            <div class="line" style="left:170px; top:80px;"></div>
+            <div class="line" style="left:170px; top:320px;"></div>
             <div class="chicken" style="left:{c1['x']}px; top:{c1['y']}px; background-color:red;"></div>
             <div class="chicken" style="left:{c2['x']}px; top:{c2['y']}px; background-color:blue;"></div>
         </div>
@@ -65,6 +77,9 @@ if st.button("Bắt đầu trận đấu!"):
         arena_placeholder.markdown(html, unsafe_allow_html=True)
         time.sleep(0.05)
     
+    # Kết thúc
+    st.session_state.running = False
     if result == "Hòa": st.warning("HÒA - Cả hai chiến kê đều kiệt sức!")
     elif result == "Đỏ Thắng": st.error("ĐỎ THẮNG - Một trận đấu mãn nhãn!")
     else: st.info("XANH THẮNG - Đòn đá chí mạng!")
+    st.rerun()
