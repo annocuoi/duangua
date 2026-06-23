@@ -1,189 +1,53 @@
 import streamlit as st
-import random
 import time
-import base64
-import streamlit.components.v1 as components
-
-
-# =========================
-# CÀI ĐẶT TRANG
-# =========================
-
-st.set_page_config(
-    page_title="Đua Ngựa",
-    layout="wide"
-)
-
-st.title("🐎 GAME ĐUA NGỰA")
-
-
-# =========================
-# LOAD GIF NGỰA
-# =========================
-
-def load_file(file):
-    with open(file, "rb") as f:
-        return base64.b64encode(f.read()).decode()
-
-
-ngua = load_file("ngua_tu_video.gif")
-
-
-# =========================
-# CSS GAME
-# =========================
-
-st.markdown(
-"""
-<style>
-
-.duongdua{
-    width:100%;
-    height:100px;
-    border-bottom:2px dashed #999;
-    position:relative;
-    overflow:hidden;
-}
-
-
-.start{
-    position:absolute;
-    left:0;
-    top:40px;
-    color:green;
-    font-size:18px;
-    font-weight:bold;
-}
-
-
-.finish{
-    position:absolute;
-    right:20px;
-    top:40px;
-    color:red;
-    font-size:18px;
-    font-weight:bold;
-}
-
-
-.horse{
-    position:absolute;
-    top:10px;
-    animation: moveHorse 8s linear forwards;
-}
-
-
-@keyframes moveHorse {
-
-    from{
-        left:0%;
-    }
-
-    to{
-        left:85%;
-    }
-
-}
-
-
-</style>
-""",
-unsafe_allow_html=True
-)
-
-
-# =========================
-# BIẾN GAME
-# =========================
-
-if "vitri" not in st.session_state:
-    st.session_state.vitri = [
-        0,0,0,0,0
-    ]
-khung = st.empty()
-
-# =========================
-# VẼ ĐƯỜNG ĐUA
-# =========================
-
-def ve_game():
-
-    html = ""
-
-    for i in range(5):
-
-        html += f"""
-
-<div class="duongdua">
-
-<div class="start">
-Xuất phát
-</div>
-
-
-<div class="horse" style="left:{st.session_state.vitri[i]}%">
-
-<img 
-src="data:image/gif;base64,{ngua}"
-width="130">
-
-</div>
-
-
-<div class="finish">
-Đích 🏆
-</div>
-
-</div>
-
-"""
-
-    khung.empty()
-
-    khung.html(html)
-
-# =========================
-# NÚT CHẠY
-# =========================
-
-
-if st.button("🚩 BẮT ĐẦU ĐUA"):
-
-
-    st.session_state.vitri=[
-        0,0,0,0,0
-    ]
-
-    thang = None
-
-
-    while thang is None:
-
-
-        for i in range(5):
-
-            buoc = random.randint(
-                1,5
-            )
-
-            st.session_state.vitri[i]+=buoc
-
-
-            if st.session_state.vitri[i] >= 88:
-
-                thang = i+1
-
-                break
-
-
-        ve_game()
-
-        time.sleep(0.12)
-
-
-
-    st.balloons()
-
-    st.success(
-        f"🏆 NGỰA SỐ {thang} CHIẾN THẮNG"
-    )
+import random
+
+st.set_page_config(page_title="Đua Ngựa Vui Vẻ", layout="wide")
+
+st.title("🏇 Trò Chơi Đua Ngựa")
+
+# CSS để tạo sân đua chuyên nghiệp
+st.markdown("""
+    <style>
+    .track { background-color: #2d5a27; height: 400px; border-bottom: 5px solid #d2b48c; padding: 20px; position: relative; }
+    .horse { position: absolute; width: 80px; transition: left 0.3s linear; }
+    .finish-line { position: absolute; right: 20px; top: 0; bottom: 0; width: 5px; background: white; }
+    </style>
+""", unsafe_allow_html=True)
+
+if st.button("Bắt đầu đua!"):
+    # Vị trí của 5 con ngựa
+    positions = [0] * 5
+    track_width = 800
+    
+    # Tạo container cho sân đua
+    track_container = st.container()
+    with track_container:
+        st.markdown('<div class="track">', unsafe_allow_html=True)
+        # Hiển thị vạch đích
+        st.markdown('<div class="finish-line"></div>', unsafe_allow_html=True)
+        
+        # Placeholder cho ngựa
+        horse_placeholders = [st.empty() for _ in range(5)]
+        
+        winner = -1
+        while max(positions) < track_width:
+            for i in range(5):
+                # Random tốc độ: mỗi bước tiến từ 5 đến 20 pixel
+                positions[i] += random.randint(5, 20)
+                
+                # Hiển thị ảnh ngựa (cần file 'ngua.gif' trong cùng thư mục)
+                horse_placeholders[i].markdown(
+                    f'<img src="data:image/gif;base64,{open("ngua.gif", "rb").read().hex()}" '
+                    f'class="horse" style="left: {positions[i]}px; top: {i*70 + 20}px;">', 
+                    unsafe_allow_html=True
+                )
+                
+                if positions[i] >= track_width and winner == -1:
+                    winner = i + 1
+            
+            time.sleep(0.1)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    st.success(f"🎉 Chúc mừng ngựa số {winner} đã về đích đầu tiên!")
