@@ -1,6 +1,22 @@
 import streamlit as st
 import time
 import random
+import base64
+
+# Hàm này đặt ở đầu file để đọc ảnh một lần duy nhất
+def get_image_base64(path):
+    with open(path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+# Tạo đường dẫn ảnh (đảm bảo file ngua.gif nằm cùng chỗ với app.py)
+img_src = f"data:image/gif;base64,{get_image_base64('ngua.gif')}"
+
+# Trong vòng lặp while, thay vì đọc file, bạn chỉ cần dùng img_src:
+horse_placeholders[i].markdown(
+    f'<img src="{img_src}" class="horse" style="left: {positions[i]}px; top: {i*70 + 20}px;">', 
+    unsafe_allow_html=True
+)
 
 st.set_page_config(page_title="Đua Ngựa Vui Vẻ", layout="wide")
 
