@@ -4,6 +4,10 @@ import time
 import base64
 
 
+# =========================
+# CÀI ĐẶT TRANG
+# =========================
+
 st.set_page_config(
     page_title="Đua Ngựa",
     layout="wide"
@@ -12,102 +16,122 @@ st.set_page_config(
 st.title("🐎 GAME ĐUA NGỰA")
 
 
-# ======= ẢNH NGỰA =======
-def load_img(file):
+# =========================
+# LOAD GIF NGỰA
+# =========================
+
+def load_file(file):
     with open(file, "rb") as f:
-        data = base64.b64encode(f.read()).decode()
-    return data
+        return base64.b64encode(f.read()).decode()
 
 
-horse_img = load_img("ngua_tu_video.gif")
+ngua = load_file("ngua_tu_video.gif")
 
 
-# ======= CSS =======
+# =========================
+# CSS GAME
+# =========================
 
-st.markdown("""
+st.markdown(
+"""
 <style>
 
 .duongdua{
-    height:90px;
-    border-bottom:2px dashed #aaa;
+    width:100%;
+    height:100px;
+    border-bottom:2px dashed #999;
     position:relative;
+    overflow:hidden;
 }
 
-
-.horse{
-    position:absolute;
-    top:10px;
-    animation: chay .25s infinite alternate;
-}
-
-
-@keyframes chay {
-    from {
-        transform: translateY(0px) rotate(-2deg);
-    }
-    to {
-        transform: translateY(-6px) rotate(2deg);
-    }
-}
 
 .start{
     position:absolute;
     left:0;
-    top:35px;
+    top:40px;
     color:green;
+    font-size:18px;
     font-weight:bold;
 }
 
 
 .finish{
     position:absolute;
-    right:10px;
-    top:35px;
+    right:20px;
+    top:40px;
     color:red;
+    font-size:18px;
     font-weight:bold;
 }
 
 
-</style>
-""", unsafe_allow_html=True)
+.horse{
+    position:absolute;
+    top:10px;
+}
 
+
+</style>
+""",
+unsafe_allow_html=True
+)
+
+
+# =========================
+# BIẾN GAME
+# =========================
 
 if "vitri" not in st.session_state:
-    st.session_state.vitri = [0,0,0,0,0]
+    st.session_state.vitri = [
+        0,0,0,0,0
+    ]
 
 
 khung = st.empty()
 
 
-def ve_duong():
+
+# =========================
+# VẼ ĐƯỜNG ĐUA
+# =========================
+
+def ve_game():
 
     html = ""
 
-    for i,x in enumerate(st.session_state.vitri):
+    for i in range(5):
 
         html += f"""
 
-        <div class="duongdua">
+<div class="duongdua">
 
-            <div class="start">
-                Xuất phát
-            </div>
 
-            <div class="horse" style="left:{x}%">
+    <div class="start">
+        Xuất phát
+    </div>
 
-                <img 
-                src="data:image/gif;base64,{horse_img}"
-                width="120">
 
-            </div>
+    <div class="horse"
+    style="left:{st.session_state.vitri[i]}%">
 
-            <div class="finish">
-                Đích 🏆
-            </div>
 
-        </div>
+        <img 
+        src="data:image/gif;base64,{ngua}"
+        width="130">
 
-        """
+
+    </div>
+
+
+    <div class="finish">
+        Đích 🏆
+    </div>
+
+
+</div>
+
+
+"""
 
     khung.markdown(
         html,
@@ -115,34 +139,53 @@ def ve_duong():
     )
 
 
-ve_duong()
 
+ve_game()
+
+
+
+# =========================
+# NÚT CHẠY
+# =========================
 
 
 if st.button("🚩 BẮT ĐẦU ĐUA"):
+
 
     st.session_state.vitri=[
         0,0,0,0,0
     ]
 
-    winner=None
+    thang = None
 
-    while winner is None:
+
+    while thang is None:
+
 
         for i in range(5):
 
-            st.session_state.vitri[i]+=random.randint(1,5)
+            buoc = random.randint(
+                1,5
+            )
 
-            if st.session_state.vitri[i]>=85:
-                winner=i+1
+            st.session_state.vitri[i]+=buoc
+
+
+            if st.session_state.vitri[i] >= 88:
+
+                thang = i+1
+
                 break
 
 
-        ve_duong()
+        ve_game()
 
-        time.sleep(0.15)
+        time.sleep(0.12)
 
+
+
+    st.balloons()
 
     st.success(
-        f"🏆 Ngựa số {winner} chiến thắng"
+        f"🏆 NGỰA SỐ {thang} CHIẾN THẮNG"
     )
