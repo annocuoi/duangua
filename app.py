@@ -6,7 +6,6 @@ import math
 st.set_page_config(page_title="Đấu Trường Đá Gà", layout="centered")
 st.title("🐔 Đấu Trường Đá Gà Máu Lửa")
 
-# CSS: Thêm vạch xuất phát
 st.markdown("""
     <style>
     .arena { width: 400px; height: 400px; border: 10px solid #5d4037;
@@ -14,37 +13,42 @@ st.markdown("""
              position: relative; margin: 0 auto; overflow: hidden; }
     .line { position: absolute; width: 40px; height: 5px; background: white; }
     .chicken { width: 30px; height: 30px; border-radius: 50%;
-               position: absolute; transition: all 0.05s linear; 
-               box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+               position: absolute; transition: all 0.05s linear; }
     </style>
 """, unsafe_allow_html=True)
 
 if st.button("Bắt đầu trận đấu!"):
-    # Kết quả (10% Hòa, 45% Đỏ, 45% Xanh)
     rand = random.random()
     result = "Hòa" if rand < 0.10 else ("Đỏ Thắng" if rand < 0.55 else "Xanh Thắng")
         
-    # Vị trí xuất phát đối xứng
     c1 = {'x': 200, 'y': 80, 'color': 'red', 'bias': 1.2 if result == "Đỏ Thắng" else 0.8}
     c2 = {'x': 200, 'y': 320, 'color': 'blue', 'bias': 1.2 if result == "Xanh Thắng" else 0.8}
     
     arena_placeholder = st.empty()
     start_time = time.time()
     
-    while time.time() - start_time < 60: # Trận đấu kéo dài 60s
+    # Trạng thái ban đầu: chưa đánh
+    is_fighting = False
+    
+    while time.time() - start_time < 60:
         dx = c2['x'] - c1['x']
         dy = c2['y'] - c1['y']
         dist = math.sqrt(dx**2 + dy**2)
         
-        # VA CHẠM: Nếu khoảng cách < 60px thì giảm tốc độ (đang "đá")
-        # Nếu ở xa thì lao vào nhau nhanh
-        speed = 5 if dist < 60 else 25
+        # LOGIC MỚI: Tiến lại gần từ từ trước khi đánh
+        if dist > 80 and not is_fighting:
+            # Giai đoạn thăm dò: tốc độ chậm (3px)
+            speed = 3
+        else:
+            # Giai đoạn chiến đấu: đã áp sát, tăng tốc (25px)
+            is_fighting = True
+            speed = 25 if dist > 60 else 5
         
         # Di chuyển
-        c1['x'] += (dx/dist) * speed * c1['bias'] + random.randint(-15, 15)
-        c1['y'] += (dy/dist) * speed * c1['bias'] + random.randint(-15, 15)
-        c2['x'] -= (dx/dist) * speed * c2['bias'] + random.randint(-15, 15)
-        c2['y'] -= (dy/dist) * speed * c2['bias'] + random.randint(-15, 15)
+        c1['x'] += (dx/dist) * speed * c1['bias'] + random.randint(-10, 10)
+        c1['y'] += (dy/dist) * speed * c1['bias'] + random.randint(-10, 10)
+        c2['x'] -= (dx/dist) * speed * c2['bias'] + random.randint(-10, 10)
+        c2['y'] -= (dy/dist) * speed * c2['bias'] + random.randint(-10, 10)
         
         # Ép trong sân
         for c in [c1, c2]:
@@ -54,7 +58,6 @@ if st.button("Bắt đầu trận đấu!"):
                 c['x'] = 200 + 165 * math.cos(angle)
                 c['y'] = 200 + 165 * math.sin(angle)
         
-        # Hiển thị vạch xuất phát + gà
         html = f'''
         <div class="arena">
             <div class="line" style="left:180px; top:80px;"></div>
@@ -66,7 +69,6 @@ if st.button("Bắt đầu trận đấu!"):
         arena_placeholder.markdown(html, unsafe_allow_html=True)
         time.sleep(0.05)
     
-    # Kết quả
     if result == "Hòa": st.warning("HÒA - Cả hai chiến kê đều kiệt sức!")
     elif result == "Đỏ Thắng": st.error("ĐỎ THẮNG - Một trận đấu mãn nhãn!")
     else: st.info("XANH THẮNG - Đòn đá chí mạng!")
