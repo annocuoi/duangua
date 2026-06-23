@@ -80,7 +80,7 @@ khung = st.empty()
 
 
 def ve_duong():
-    
+
     html = ""
 
     for i,x in enumerate(st.session_state.vitri):
@@ -89,24 +89,21 @@ def ve_duong():
 
         <div class="duongdua">
 
-        <div class="start">
-        Xuất phát
-        </div>
+            <div class="start">
+                Xuất phát
+            </div>
 
+            <div class="horse" style="left:{x}%">
 
-        <div class="horse"
-        style="left:{x}%">
+                <img 
+                src="data:image/gif;base64,{horse_img}"
+                width="120">
 
-        data:image/gif;base64,{horse_img}"
-        width="120">
+            </div>
 
-        </div>
-
-
-        <div class="finish">
-        Đích 🏆
-        </div>
-
+            <div class="finish">
+                Đích 🏆
+            </div>
 
         </div>
 
@@ -116,7 +113,6 @@ def ve_duong():
         html,
         unsafe_allow_html=True
     )
-
 
 
 ve_duong()
